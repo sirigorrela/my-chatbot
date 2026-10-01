@@ -9,23 +9,29 @@ if st.button("🆕 New Chat"):
     st.session_state.messages = []
     st.rerun()
 
+
 # Get API key
 API_KEY = st.secrets["GEMINI_API_KEY"]
 
-# Gemini client
+# Create Gemini client
 client = genai.Client(api_key=API_KEY)
+
 
 # Store conversation
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+
 # Show previous messages
 for message in st.session_state.messages:
+
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
+
 # Chat input
 user_message = st.chat_input("Type your message...")
+
 
 if user_message:
 
@@ -39,6 +45,7 @@ if user_message:
         "content": user_message
     })
 
+
     # Create conversation text
     conversation = ""
 
@@ -46,20 +53,31 @@ if user_message:
         conversation += message["role"] + ": "
         conversation += message["content"] + "\n"
 
+
     # Ask Gemini
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=conversation
-    )
+    try:
 
-    answer = response.text
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=conversation
+        )
 
-    # Show Gemini response
-    with st.chat_message("assistant"):
-        st.write(answer)
+        answer = response.text
 
-    # Save Gemini response
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": answer
-    })
+
+        # Show Gemini response
+        with st.chat_message("assistant"):
+            st.write(answer)
+
+
+        # Save Gemini response
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": answer
+        })
+
+
+    except Exception as e:
+
+        st.error("Gemini API Error:")
+        st.code(str(e))
