@@ -4,6 +4,11 @@ from google import genai
 
 st.title("🤖 My Chatbot")
 
+# New Chat button
+if st.button("🆕 New Chat"):
+    st.session_state.messages = []
+    st.rerun()
+
 # Get API key
 API_KEY = st.secrets["GEMINI_API_KEY"]
 
@@ -34,7 +39,7 @@ if user_message:
         "content": user_message
     })
 
-    # Create conversation text for Gemini
+    # Create conversation text
     conversation = ""
 
     for message in st.session_state.messages:
